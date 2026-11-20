@@ -6,97 +6,167 @@
 <title>Northeast Historical Atlas — Who ruled the Northeast, in every year</title>
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#0f2340;--navy2:#162f52;--orange:#ff6a00;--orange2:#ff8a2a;--cream:#fff8e9;--parch:#fdf3d7;--paper:#fffdf6;--maroon:#7b1e2b;--ink:#1a1a1a;--muted:#5b6573;--line:#e8dcc0;--gold:#c9a227}
+:root{
+  color-scheme:light dark;
+  --bg:#eef3f7; --surface:#fffdf6; --surface-2:#f3ecd9; --ink:#1d2733; --ink-2:#43536a;
+  --muted:#6d7c8c; --line:#d9c9a4; --line-soft:#e8dcc0;
+  --accent:#ff6a00; --accent-strong:#d15400; --accent-soft:#ffe9d6; --on-accent:#fff;
+  --dark:#0f2340; --dark-2:#1e3a5f; --on-dark:#f5f8fc; --on-dark-dim:#aebdd1;
+  --gold:#c9a227; --hero:#fdf3d7; --radius:14px;
+  --shadow:0 1px 2px rgba(15,35,64,.06),0 10px 30px -18px rgba(15,35,64,.3);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0b1524; --surface:#152a44; --surface-2:#1d3554; --ink:#eef3f9; --ink-2:#c3d0df;
+    --muted:#8fa1b5; --line:#33507a; --line-soft:#27405f;
+    --accent:#ff7d26; --accent-strong:#ff9a4d; --accent-soft:#40280f; --on-accent:#fff;
+    --dark:#081426; --dark-2:#12283f; --on-dark:#f5f8fc; --on-dark-dim:#9db1c7;
+    --gold:#d9b23c; --hero:#1c2c47;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 32px -18px rgba(0,0,0,.7);
+  }
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,sans-serif;background:#eef3f7;color:var(--ink)}
-a{color:var(--maroon);font-weight:700}
-button{cursor:pointer}
-header{position:sticky;top:0;z-index:1200;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;flex-wrap:wrap}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-mark{width:42px;height:42px;background:var(--orange);border-radius:10px;display:grid;place-items:center;font-size:22px}
-.logo h1{font-family:Fraunces,serif;font-size:22px;line-height:1;margin:0;letter-spacing:-.02em}
-.logo p{margin:2px 0 0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;font-weight:700}
+html{scroll-behavior:auto}
+body{margin:0;font-family:Manrope,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);font-weight:700;text-underline-offset:3px}
+button{cursor:pointer;font-family:inherit}
+::selection{background:var(--accent);color:var(--on-accent)}
+
+/* ---------- header ---------- */
+header{position:sticky;top:0;z-index:1200;background:var(--dark);color:var(--on-dark);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 18px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px;min-width:0}
+.logo-mark{width:44px;height:44px;border:1.5px solid var(--gold);border-radius:9px;display:grid;place-items:center;font-family:Spectral,serif;font-weight:700;font-size:17px;color:var(--gold);letter-spacing:.04em;flex-shrink:0}
+.logo h1{font-family:Spectral,Georgia,serif;font-weight:600;font-size:clamp(19px,3.4vw,24px);line-height:1.05;margin:0;letter-spacing:-.01em}
+.logo p{margin:3px 0 0;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--on-dark-dim);font-weight:700}
 .nav{display:flex;gap:8px;flex-wrap:wrap}
-.pill{border:0;background:var(--orange);color:#fff;padding:10px 14px;border-radius:999px;font-weight:800;font-size:13px;min-height:40px}
-.pill.ghost{background:#fff;color:var(--navy)}
-.pill.white{background:transparent;border:1.5px solid rgba(255,255,255,.7);color:#fff}
-.hero-strip{background:var(--parch);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.pill{border:0;background:var(--accent);color:var(--on-accent);padding:10px 16px;border-radius:999px;font-weight:800;font-size:13px;min-height:40px}
+.pill:hover{background:var(--accent-strong)}
+.pill.ghost{background:var(--surface);color:var(--ink)}
+.pill.ghost:hover{background:var(--surface-2)}
+.pill.white{background:transparent;border:1.5px solid rgba(245,248,252,.45);color:var(--on-dark)}
+.pill.white:hover{background:rgba(245,248,252,.12)}
+
+/* ---------- hero strip ---------- */
+.hero-strip{border-bottom:1px solid var(--line);background:var(--hero);padding:12px 18px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;max-width:1440px;margin:0 auto}
 .hero-strip b{font-size:14px}
 .hero-strip span{font-size:13px;color:var(--muted)}
-.layout{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:300px 1fr 330px;gap:14px;padding:14px}
-@media(max-width:980px){.layout{grid-template-columns:1fr}.left,.right{order:2}.center{order:1}}
-.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
-.card h2{font-family:Fraunces,serif;font-size:20px;margin:0 0 6px;line-height:1.1}
-.card h3{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--maroon);margin:0 0 10px}
-label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:6px}
-select,input[type=text],input[type=number]{width:100%;padding:12px;border:1.5px solid #d8cfb8;border-radius:10px;font-size:15px;background:#fff;min-height:46px}
-.search-wrap{margin-top:12px}
-.who-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.who-item{display:flex;gap:10px;padding:12px;border:1px solid #eee2c2;border-radius:12px;background:#fff;cursor:pointer;text-align:left;width:100%}
-.who-item:hover{border-color:var(--orange)}
-.swatch{width:18px;height:18px;border-radius:5px;flex-shrink:0;margin-top:2px;border:1px solid rgba(0,0,0,.15)}
-.who-item b{font-size:14px;display:block}
-.who-item small{color:var(--muted);line-height:1.4;display:block;font-size:12.5px}
-.share-bar{height:6px;background:#f0e6c8;border-radius:99px;overflow:hidden;margin-top:6px}
-.share-bar i{display:block;height:100%;background:var(--orange)}
-.center{display:flex;flex-direction:column;gap:14px;min-width:0}
-.map-card{background:#dbeaf3;border:1px solid #c8dbe8;border-radius:18px;overflow:hidden;position:relative}
+.chip{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent-strong);padding:5px 9px;border-radius:999px;white-space:nowrap}
+
+/* ---------- layout & cards ---------- */
+.layout{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:302px minmax(0,1fr) 332px;gap:16px;padding:16px 18px}
+@media(max-width:1080px){.layout{grid-template-columns:1fr}.left,.right{order:2}.center{order:1}}
+.left,.right{display:flex;flex-direction:column;gap:16px;min-width:0}
+.center{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:21px;margin:0 0 6px;line-height:1.15}
+.card h3{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin:0 0 10px;font-weight:800}
+label{font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--ink-2)}
+select,input[type=text],input[type=number]{width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:var(--surface);color:var(--ink);min-height:46px;font-family:inherit}
+select:focus,input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-wrap{margin-top:14px}
+.hint{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* ---------- who ruled list ---------- */
+.who-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.who-item{display:flex;gap:11px;padding:12px 13px;border:1px solid var(--line-soft);border-radius:11px;background:var(--surface);cursor:pointer;text-align:left;width:100%;color:var(--ink)}
+.who-item:hover{border-color:var(--accent)}
+.swatch{width:16px;height:16px;border-radius:4px;flex-shrink:0;margin-top:3px;border:1px solid rgba(0,0,0,.18)}
+.who-item b{font-size:14px;display:block;line-height:1.3}
+.who-item small{color:var(--muted);line-height:1.45;display:block;font-size:12.5px;margin-top:2px}
+.share-bar{height:5px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:8px}
+.share-bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+/* ---------- map ---------- */
+.map-card{background:#cfe0ec;border:1px solid var(--line);border-radius:18px;overflow:hidden;position:relative;box-shadow:var(--shadow)}
+@media (prefers-color-scheme:dark){.map-card{background:#16283f}}
 #map{height:560px;width:100%;background:#e6f0f6;z-index:1}
-@media(max-width:600px){#map{height:440px}}
-.year-box{position:absolute;top:14px;right:14px;z-index:800;background:var(--navy);color:#fff;border-radius:14px;padding:12px 14px;text-align:center;min-width:132px;box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer;border:2px solid #fff}
-.year-box strong{font-family:Fraunces,serif;font-size:36px;line-height:1;display:block}
-.year-box span{font-size:10px;letter-spacing:.14em;font-weight:800}
+@media(max-width:600px){#map{height:430px}}
+.leaflet-interactive:hover{stroke-width:3}
+.year-box{position:absolute;top:14px;right:14px;z-index:800;background:var(--dark);color:var(--on-dark);border-radius:12px;padding:10px 16px 11px;text-align:center;min-width:126px;box-shadow:0 12px 28px -10px rgba(0,0,0,.45);cursor:pointer;border:1px solid rgba(245,248,252,.25)}
+.year-box strong{font-family:Spectral,Georgia,serif;font-weight:700;font-size:36px;line-height:1;display:block;font-variant-numeric:tabular-nums}
+.year-box span{font-size:9.5px;letter-spacing:.16em;font-weight:800;color:var(--on-dark-dim)}
 .map-tools{position:absolute;left:12px;bottom:12px;z-index:800;display:flex;gap:6px;flex-wrap:wrap}
-.map-tools button{background:#fff;border:1px solid #ddd;border-radius:999px;padding:9px 12px;font-weight:700;font-size:13px;min-height:38px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
-.legend{position:absolute;right:12px;bottom:12px;z-index:700;background:rgba(255,255,255,.96);padding:10px 12px;border-radius:12px;font-size:12px;line-height:1.6;max-width:210px;border:1px solid #ddd}
-@media(max-width:700px){.legend{top:86px;bottom:auto;right:12px;left:auto;max-width:170px;font-size:11px;padding:8px}.map-tools{max-width:calc(100% - 24px)}.map-tools button{font-size:12px;padding:8px 10px}}
-.fallback-map{width:100%;height:100%;background:#dbeef7}
+.map-tools button{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:9px 13px;font-weight:700;font-size:13px;min-height:38px;box-shadow:0 4px 14px -6px rgba(0,0,0,.3)}
+.map-tools button:hover{background:var(--surface-2)}
+.legend{position:absolute;right:12px;bottom:12px;z-index:700;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(4px);padding:10px 12px;border-radius:11px;font-size:12px;line-height:1.65;max-width:212px;border:1px solid var(--line-soft);color:var(--ink-2)}
+@media(max-width:700px){.legend{display:none}.map-tools{max-width:calc(100% - 24px)}.map-tools button{font-size:12px;padding:8px 10px}}
+.fallback-map{width:100%;height:100%}
 .fallback-map polygon{cursor:pointer;stroke:#fff;stroke-width:1.5}
 .fallback-map polygon:hover{opacity:.85}
-.timeline{background:var(--navy);color:#fff;border-radius:18px;padding:16px}
-.timeline-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.play-btn{width:52px;height:52px;border-radius:50%;background:var(--orange);border:0;color:#fff;font-size:20px;display:grid;place-items:center;flex-shrink:0}
-.year-big{font-family:Fraunces,serif;font-size:42px;line-height:1;min-width:96px}
-.timeline input[type=range]{flex:1;accent-color:var(--orange);height:36px;min-width:180px}
-.density{height:18px;background:#1e3a5f;border-radius:99px;position:relative;margin:10px 0 6px;overflow:hidden}
-.density i{position:absolute;top:0;bottom:0;width:3px;background:#ff3b30;opacity:.9}
-.ticks{display:flex;justify-content:space-between;font-size:11px;opacity:.8;font-weight:700;flex-wrap:wrap;gap:4px}
-.time-machine{width:100%;margin-top:12px;background:#d92323;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:900;font-size:15px;letter-spacing:.02em}
+
+/* ---------- timeline ---------- */
+.timeline{background:var(--dark);color:var(--on-dark);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+.timeline-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.play-btn{width:54px;height:54px;border-radius:50%;background:var(--accent);border:0;color:var(--on-accent);font-size:19px;display:grid;place-items:center;flex-shrink:0}
+.play-btn:hover{background:var(--accent-strong)}
+.year-big{font-family:Spectral,Georgia,serif;font-weight:700;font-size:44px;line-height:1;min-width:104px;font-variant-numeric:tabular-nums}
+.year-cap{font-size:10.5px;color:var(--on-dark-dim);font-weight:800;letter-spacing:.12em;margin-top:3px}
+.timeline input[type=range]{flex:1;min-width:180px;-webkit-appearance:none;appearance:none;height:8px;border-radius:99px;background:var(--dark-2);outline-offset:6px;cursor:grab}
+.timeline input[type=range]:active{cursor:grabbing}
+.timeline input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--accent);border:3px solid var(--on-dark);box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.timeline input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--accent);border:3px solid var(--on-dark);box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.density{height:16px;background:var(--dark-2);border-radius:99px;position:relative;margin:14px 0 6px;overflow:hidden}
+.density i{position:absolute;top:3px;bottom:3px;width:3px;border-radius:2px;background:#e4573d;opacity:.85}
+.density i.near{background:#ffb03a;opacity:1}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--on-dark-dim);font-weight:700;flex-wrap:wrap;gap:4px}
+.time-machine{width:100%;margin-top:14px;background:#d92323;color:#fff;border:0;padding:14px;border-radius:11px;font-weight:800;font-size:15px}
+.time-machine:hover{background:#b91c1c}
 .modes{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.modes button{flex:1;min-width:92px;padding:11px 8px;border-radius:999px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:12.5px}
-.modes button.active{background:#fff;color:var(--navy);border-color:#fff}
-.collector{background:linear-gradient(180deg,#fff8dc,#fff);border:2px solid var(--gold);border-radius:16px;padding:16px;position:relative;overflow:hidden}
-.collector-num{position:absolute;top:12px;right:12px;background:var(--maroon);color:#fff;padding:6px 10px;border-radius:999px;font-weight:900;font-size:12px}
-.collector h3{font-family:Fraunces,serif;font-size:26px;text-transform:none;letter-spacing:0;color:var(--ink);margin:4px 0}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
-.stat b{font-size:18px;display:block}
-.stat span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.teaser{padding:12px;border:1px dashed #d9c99a;border-radius:12px;margin-bottom:8px;background:#fff}
+.modes button{flex:1;min-width:92px;padding:11px 8px;border-radius:999px;border:1.5px solid rgba(245,248,252,.22);background:rgba(245,248,252,.06);color:var(--on-dark);font-weight:700;font-size:12.5px}
+.modes button:hover{background:rgba(245,248,252,.14)}
+.modes button.active{background:var(--on-dark);color:var(--dark);border-color:var(--on-dark)}
+#modeNote{font-size:13px;color:var(--on-dark-dim);margin:12px 0 0;line-height:1.6}
+
+/* ---------- story / collector / misc cards ---------- */
+.collector{background:var(--dark);color:var(--on-dark);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.collector::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--gold)}
+.collector-num{position:absolute;top:14px;right:14px;background:var(--accent);color:var(--on-accent);padding:5px 10px;border-radius:999px;font-weight:800;font-size:11.5px;letter-spacing:.04em}
+.collector h3{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;font-weight:800}
+.collector .cname{font-family:Spectral,Georgia,serif;font-weight:600;font-size:27px;line-height:1.1;margin:2px 36px 4px 0}
+.collector .cmeta{margin:0;font-size:13px;color:var(--on-dark-dim)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.stat{background:var(--dark-2);border:1px solid rgba(245,248,252,.1);border-radius:10px;padding:11px 12px}
+.stat b{font-size:18px;display:block;font-variant-numeric:tabular-nums}
+.stat span{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--on-dark-dim);font-weight:700}
+.teaser{padding:12px 13px;border:1px solid var(--line-soft);border-radius:11px;margin-bottom:8px;background:var(--surface)}
+.teaser:hover{border-color:var(--accent)}
 .teaser b{font-size:14px}
-.btn{padding:12px 16px;border-radius:999px;border:0;font-weight:800;min-height:44px}
-.btn-orange{background:var(--orange);color:#fff}
-.btn-outline{background:#fff;border:1.5px solid #ddd}
-footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
-.footer-card{background:var(--navy);color:#dbe6f2;border-radius:16px;padding:20px;line-height:1.7;font-size:14px}
-.footer-card b{color:#fff}
-.modal{position:fixed;inset:0;background:rgba(10,20,35,.72);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}
+.btn{padding:12px 16px;border-radius:999px;border:0;font-weight:800;min-height:44px;font-size:14px}
+.btn-orange{background:var(--accent);color:var(--on-accent)}
+.btn-orange:hover{background:var(--accent-strong)}
+.btn-outline{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+.btn-outline:hover{background:var(--surface-2)}
+.oneline{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+
+/* ---------- footer ---------- */
+footer{max-width:1440px;margin:0 auto;padding:4px 18px 30px}
+.footer-card{background:var(--dark);color:var(--on-dark-dim);border-radius:var(--radius);padding:20px;line-height:1.75;font-size:14px}
+.footer-card b{color:var(--on-dark)}
+.foot-note{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 0}
+
+/* ---------- modals & toast ---------- */
+.modal{position:fixed;inset:0;background:rgba(8,20,38,.66);backdrop-filter:blur(3px);z-index:2000;display:none;align-items:flex-start;justify-content:center;padding:16px;overflow:auto}
 .modal.open{display:flex}
-.modal-box{background:#fffdf6;width:min(920px,100%);border-radius:18px;padding:22px;margin-top:20px}
-.modal-box h2{font-family:Fraunces,serif;font-size:28px;margin:0 0 8px}
+.modal-box{background:var(--surface);color:var(--ink);width:min(920px,100%);border-radius:16px;padding:24px;margin-top:20px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
+.modal-box h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:29px;margin:10px 0 8px}
+.modal-box h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
-.battle-row{border:1px solid var(--line);background:#fff;border-radius:12px;padding:14px}
-.chip{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#ffe9d6;padding:4px 7px;border-radius:999px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:#111;color:#fff;padding:12px 16px;border-radius:999px;font-weight:700;z-index:3000;display:none}
-.leaflet-container{font-family:Inter,sans-serif}
+.battle-row{border:1px solid var(--line-soft);background:var(--surface);border-radius:12px;padding:15px}
+.battle-row:hover{border-color:var(--accent)}
+.battle-row h4{font-family:Spectral,Georgia,serif;font-size:17px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--dark);color:var(--on-dark);padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;z-index:3000;display:none;box-shadow:0 14px 30px -10px rgba(0,0,0,.5)}
+.toast.show{display:block}
+.leaflet-container{font-family:Manrope,sans-serif}
 </style>
 </head>
 <body>
 <header>
-  <div class="logo"><div class="logo-mark">🗺️</div><div><h1>Northeast Historical Atlas</h1><p>Who ruled • Every year • 300 — Today</p></div></div>
+  <div class="logo"><div class="logo-mark">NE</div><div><h1>Northeast Historical Atlas</h1><p>Who ruled · Every year · 300 — Today</p></div></div>
   <nav class="nav">
     <button class="pill white" onclick="openModal('correction')">Suggest a correction</button>
     <button class="pill" onclick="openModal('explore')">Explore</button>
@@ -107,13 +177,13 @@ footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
 </header>
 
 <div class="hero-strip">
-  <div><b>Welcome — drag the gold slider below the map to travel through time.</b> <span>Watch Ahom, Koch, Kamarupa, Manipur, Tripura and others rise and fall.</span></div>
-  <div style="display:flex;gap:6px;align-items:center"><span id="yearHeadline" style="font-weight:800;color:#111">1700 in History</span><span id="battleCount" class="chip">3 battles nearby</span></div>
+  <div><b>Drag the gold slider below the map to travel through time.</b> <span>Watch Ahom, Koch, Kamarupa, Manipur, Tripura and others rise and fall.</span></div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span id="yearHeadline" style="font-weight:800">1700 in History</span><span id="battleCount" class="chip">3 battles nearby</span></div>
 </div>
 
 <div class="layout">
   <!-- LEFT -->
-  <aside class="left" style="display:flex;flex-direction:column;gap:14px">
+  <aside class="left">
     <div class="card">
       <h3>Start here — it's easy</h3>
       <h2>Find your place</h2>
@@ -127,14 +197,14 @@ footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
         <input type="text" id="searchBox" placeholder="Search your district, kingdom, king, battle…">
         <div id="searchResults" style="margin-top:8px;font-size:13px;line-height:1.6"></div>
       </div>
-      <p style="font-size:13px;color:var(--muted);line-height:1.6">Tap any coloured area on the map. The story opens on the right. Grey means no single ruling house that year.</p>
+      <p class="hint" style="margin-bottom:0">Tap any coloured area on the map. The story opens on the right. Grey means no single ruling house that year.</p>
     </div>
 
     <div class="card">
       <h3 id="whoTitle">Who Ruled in 1700</h3>
       <h2 style="font-size:18px">Biggest powers first</h2>
       <div id="whoList" class="who-list"></div>
-      <p style="font-size:12px;color:var(--muted)">Area is approximate. Striped / dashed on the map = tributary — it paid tribute but kept its own ruler.</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6">Area is approximate. Striped / dashed on the map = tributary — it paid tribute but kept its own ruler.</p>
     </div>
   </aside>
 
@@ -156,9 +226,9 @@ footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
     <div class="timeline">
       <div class="timeline-top">
         <button class="play-btn" id="playBtn" aria-label="Play timeline">▶</button>
-        <div><div class="year-big" id="bigYear">1700</div><div style="font-size:12px;opacity:.85;font-weight:700;letter-spacing:.08em">DRAG TO TRAVEL IN TIME</div></div>
-        <input type="range" id="yearSlider" min="300" max="2025" value="1700" step="1">
-        <button class="btn btn-orange" onclick="document.getElementById('yearSlider').value=1700;updateYear(1700)">Go to 1700</button>
+        <div><div class="year-big" id="bigYear">1700</div><div class="year-cap">DRAG TO TRAVEL IN TIME</div></div>
+        <input type="range" id="yearSlider" min="300" max="2025" value="1700" step="1" aria-label="Year">
+        <button class="btn btn-orange" onclick="goYear(1700)">Go to 1700</button>
       </div>
       <div class="density" id="density"></div>
       <div class="ticks"><span>300</span><span>600</span><span>900</span><span>1200</span><span>1500</span><span>1700</span><span>1900</span><span>2000</span><span>Today</span></div>
@@ -172,17 +242,17 @@ footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
         <button onclick="downloadPoster()">⬇ Image</button>
         <button onclick="sharePage()">↗ Share</button>
       </div>
-      <p id="modeNote" style="font-size:13px;opacity:.9;margin:10px 0 0;line-height:1.6">Single Year is on. You are seeing one year at a time — the clearest way to read the map.</p>
+      <p id="modeNote">Single Year is on. You are seeing one year at a time — the clearest way to read the map.</p>
     </div>
 
-    <div class="card" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
-      <div><h2 style="font-size:18px">1700 in one line</h2><p id="oneLine" style="margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.6;max-width:620px">In 1700 the Ahom Kingdom was the largest power in the Northeast, ruling the Brahmaputra valley from Garhgaon / Rangpur.</p></div>
+    <div class="card oneline">
+      <div><h2 style="font-size:18px">The year in one line</h2><p id="oneLine" style="margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.6;max-width:620px">In 1700 the Ahom Kingdom was the largest power in the Northeast, ruling the Brahmaputra valley from Garhgaon / Rangpur.</p></div>
       <button class="btn btn-orange" onclick="openModal('battles')">See battles of this era →</button>
     </div>
   </section>
 
   <!-- RIGHT -->
-  <aside class="right" style="display:flex;flex-direction:column;gap:14px">
+  <aside class="right">
     <div class="card" id="selectedCard">
       <h3>Selected Kingdom — click a region to read its story</h3>
       <div id="selectedContent"></div>
@@ -210,15 +280,15 @@ footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
     <b>Free to reuse:</b> This atlas is CC0. Copy the text, share the maps, use it in class — no permission needed.<br>
     <b>Please note:</b> Borders are approximations. Historical boundaries in the hills and valleys were fluid, seasonal and often disputed. Dates marked “c.” are circa / approximate. Curated from cited sources, supplemented by Wikipedia.
   </div>
-  <p style="text-align:center;font-size:12px;color:#667">Northeast Historical Atlas • Arunachal • Assam • Manipur • Meghalaya • Mizoram • Nagaland • Sikkim • Tripura</p>
+  <p class="foot-note">Northeast Historical Atlas • Arunachal • Assam • Manipur • Meghalaya • Mizoram • Nagaland • Sikkim • Tripura</p>
 </footer>
 
 <!-- MODALS -->
-<div class="modal" id="modal-explore"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>Explore</h2><p style="color:var(--muted)">Browse by what interests you. Tap a kingdom to jump to it on the map.</p><h3>Kingdoms</h3><div class="grid2" id="exploreKingdoms"></div><h3 style="margin-top:20px">Eras</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-orange" onclick="jumpYear(600)">Early Kingdoms 350–1140</button><button class="btn btn-outline" onclick="jumpYear(1400)">Valley Kingdoms 1200–1600</button><button class="btn btn-outline" onclick="jumpYear(1671)">Ahom–Mughal Wars 1615–1682</button><button class="btn btn-outline" onclick="jumpYear(1850)">British Period 1826–1947</button><button class="btn btn-outline" onclick="jumpYear(1987)">New States 1947–1987</button></div><h3 style="margin-top:20px">Districts & Cards</h3><p>Sadiya • Dimapur • Imphal (Kangla) • Jaintiapur • Shillong • Kohima • Aizawl • Agartala • Gangtok • Cooch Behar — each district follows the kingdom that ruled it that year. Collector cards are in the right panel for every kingdom.</p></div></div>
+<div class="modal" id="modal-explore"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>Explore</h2><p style="color:var(--muted)">Browse by what interests you. Tap a kingdom to jump to it on the map.</p><h3>Kingdoms</h3><div class="grid2" id="exploreKingdoms"></div><h3 style="margin-top:20px">Eras</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-orange" onclick="jumpYear(600)">Early Kingdoms 350–1140</button><button class="btn btn-outline" onclick="jumpYear(1400)">Valley Kingdoms 1200–1600</button><button class="btn btn-outline" onclick="jumpYear(1671)">Ahom–Mughal Wars 1615–1682</button><button class="btn btn-outline" onclick="jumpYear(1850)">British Period 1826–1947</button><button class="btn btn-outline" onclick="jumpYear(1987)">New States 1947–1987</button></div><h3 style="margin-top:20px">Districts &amp; Cards</h3><p>Sadiya • Dimapur • Imphal (Kangla) • Jaintiapur • Shillong • Kohima • Aizawl • Agartala • Gangtok • Cooch Behar — each district follows the kingdom that ruled it that year. Collector cards are in the right panel for every kingdom.</p></div></div>
 
-<div class="modal" id="modal-battles"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>Battles & Events</h2><p style="color:var(--muted)">Filter by era or type. All dates are well-established; uncertain ones are marked approximate.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><select id="battleEra" style="flex:1;min-width:140px"><option value="all">All eras</option><option>Early</option><option>Medieval</option><option>Ahom–Mughal</option><option>Colonial</option><option>Modern</option></select><select id="battleType" style="flex:1;min-width:140px"><option value="all">War + Political</option><option>War</option><option>Political</option></select><input type="number" id="battleFrom" placeholder="From year" style="flex:1;min-width:110px"><input type="number" id="battleTo" placeholder="To year" style="flex:1;min-width:110px"><button class="btn btn-orange" onclick="renderBattlesModal()">Filter</button></div><div class="grid2" id="battlesList"></div></div></div>
+<div class="modal" id="modal-battles"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>Battles &amp; Events</h2><p style="color:var(--muted)">Filter by era or type. All dates are well-established; uncertain ones are marked approximate.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"><select id="battleEra" style="flex:1;min-width:140px"><option value="all">All eras</option><option>Early</option><option>Medieval</option><option>Ahom–Mughal</option><option>Colonial</option><option>Modern</option></select><select id="battleType" style="flex:1;min-width:140px"><option value="all">War + Political</option><option>War</option><option>Political</option></select><input type="number" id="battleFrom" placeholder="From year" style="flex:1;min-width:110px"><input type="number" id="battleTo" placeholder="To year" style="flex:1;min-width:110px"><button class="btn btn-orange" onclick="renderBattlesModal()">Filter</button></div><div class="grid2" id="battlesList"></div></div></div>
 
-<div class="modal" id="modal-sources"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>Sources</h2><p style="line-height:1.7">Every entry tries to cite a source. Main references used for this Northeast edition:</p><ul style="line-height:1.9"><li><b>Historical Atlas of South Asia</b> — Joseph E. Schwartzberg (ed.)</li><li><b>Cambridge History of India</b> & <b>History and Culture of Indian People (HCIP)</b></li><li><b>A History of Assam</b> — Edward Gait; <b>Comprehensive History of Assam</b> — S.L. Baruah</li><li><b>History of Manipur, Tripura, Mizoram, Nagaland & Sikkim</b> — state histories and gazetteers</li><li><b>Wikipedia</b> — per-entry links on each kingdom card (e.g. Ahom Kingdom, Kamarupa, Battle of Saraighat)</li></ul><p style="font-size:13px;color:var(--muted)">Per-entry sources are shown on each kingdom’s collector card. If you spot an error, use “Suggest a correction”.</p></div></div>
+<div class="modal" id="modal-sources"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>Sources</h2><p style="line-height:1.7">Every entry tries to cite a source. Main references used for this Northeast edition:</p><ul style="line-height:1.9"><li><b>Historical Atlas of South Asia</b> — Joseph E. Schwartzberg (ed.)</li><li><b>Cambridge History of India</b> &amp; <b>History and Culture of Indian People (HCIP)</b></li><li><b>A History of Assam</b> — Edward Gait; <b>Comprehensive History of Assam</b> — S.L. Baruah</li><li><b>History of Manipur, Tripura, Mizoram, Nagaland &amp; Sikkim</b> — state histories and gazetteers</li><li><b>Wikipedia</b> — per-entry links on each kingdom card (e.g. Ahom Kingdom, Kamarupa, Battle of Saraighat)</li></ul><p style="font-size:13px;color:var(--muted)">Per-entry sources are shown on each kingdom’s collector card. If you spot an error, use “Suggest a correction”.</p></div></div>
 
 <div class="modal" id="modal-about"><div class="modal-box"><button class="btn btn-outline" onclick="closeModals()">✕ Close</button><h2>About this atlas</h2><p style="line-height:1.7"><b>Mission:</b> One simple map that answers “who ruled here in this year?” for the whole Northeast — for students, teachers and curious readers.</p><p style="line-height:1.7"><b>Method:</b> We place the best-known ruling house for each area in each year, using published atlases and histories. Where control was shared, seasonal or tribal, we show grey or note it as tributary.</p><p style="line-height:1.7"><b>Limits:</b> Borders are approximations. Hill polities — Naga, Mizo, Khasi and others — were often confederacies of villages and chiefs, not single kingdoms with fixed borders. Dates with “c.” are approximate.</p><p><b>License:</b> CC0 — free to reuse.</p></div></div>
 
@@ -231,24 +301,24 @@ footer{max-width:1440px;margin:0 auto;padding:10px 14px 28px}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const POLITIES=[
-{id:'kamarupa',num:1,name:'Kamarupa',color:'#f59e0b',start:350,end:1140,capital:'Pragjyotishpura (Guwahati)',area:42000,districts:18,peak:52000,greatest:'Bhaskaravarman',wiki:'https://en.wikipedia.org/wiki/Kamarupa',desc:'First great kingdom of the Brahmaputra valley. Its kings ruled from Pragjyotishpura and claimed descent from Naraka.',poly:[[27.1,88.9],[27.6,91.5],[27.2,93.2],[26.2,93.4],[25.7,91.2],[25.9,89.2]],rulers:[{n:'Pushyavarman',f:350,t:374},{n:'Kumar Bhaskaravarman / Bhaskaravarman',f:594,t:650},{n:'Brahmapala',f:900,t:920}]},
-{id:'davaka',num:2,name:'Davaka',color:'#06b6d4',start:350,end:550,capital:'— (central Assam)',area:6000,districts:3,peak:7000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Davaka',desc:'Small early kingdom in central Assam, later absorbed into Kamarupa.',poly:[[26.5,92.4],[26.6,93.3],[25.9,93.2],[25.8,92.5]],rulers:[{n:'Local Davaka chiefs',f:350,t:550}]},
-{id:'chutia',num:3,name:'Chutia Kingdom',color:'#ec4899',start:1187,end:1524,capital:'Sadiya',area:15000,districts:7,peak:18000,greatest:'Gaurinarayan',wiki:'https://en.wikipedia.org/wiki/Chutia_Kingdom',desc:'Ruled the far east around Sadiya. Known for copper-plate grants and the worship of Kesai Khati.',poly:[[28.1,94.6],[28.3,96.0],[27.4,95.9],[27.1,94.7]],rulers:[{n:'Birpal',f:1187,t:1220},{n:'Gaurinarayan',f:1220,t:1250},{n:'Nitipal',f:1500,t:1524}]},
-{id:'ahom',num:4,name:'Ahom Kingdom',color:'#e11d48',start:1228,end:1826,capital:'Garhgaon, then Rangpur',area:48000,districts:22,peak:62000,greatest:'Sukaphaa / Rudra Singha',wiki:'https://en.wikipedia.org/wiki/Ahom_kingdom',desc:'Founded by Sukaphaa in 1228. Ruled Assam for nearly 600 years and stopped the Mughals at Saraighat in 1671.',poly:[[27.8,93.6],[28.0,95.9],[26.9,96.0],[26.1,94.2],[26.4,93.4]],rulers:[{n:'Sukaphaa',f:1228,t:1268},{n:'Suhungmung',f:1497,t:1539},{n:'Rudra Singha',f:1696,t:1714},{n:'Gadadhar Singha',f:1681,t:1696},{n:'Purandar Singha',f:1818,t:1819}]},
-{id:'koch',num:5,name:'Koch Kingdom',color:'#8b5cf6',start:1515,end:1949,capital:'Cooch Behar',area:22000,districts:11,peak:34000,greatest:'Nara Narayan',wiki:'https://en.wikipedia.org/wiki/Koch_dynasty',desc:'Rose under Viswa Singha and Nara Narayan. At its peak it invaded Assam (1562–63) and held the western valley.',poly:[[26.9,88.6],[27.0,90.3],[26.0,90.4],[25.6,88.9]],rulers:[{n:'Viswa Singha',f:1515,t:1540},{n:'Nara Narayan',f:1540,t:1587},{n:'Lakshmi Narayan',f:1587,t:1627},{n:'Rup Narayan (Koch Bihar)',f:1693,t:1714}]},
-{id:'kachari',num:6,name:'Kachari / Dimasa',color:'#10b981',start:1200,end:1832,capital:'Dimapur, then Khaspur',area:16000,districts:8,peak:20000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Dimasa_Kingdom',desc:'Dimasa-Kachari kingdom centred first at Dimapur, later Maibong and Khaspur. The Ahoms sacked Dimapur in 1536.',poly:[[26.1,92.7],[26.3,93.9],[25.1,93.7],[24.8,92.8]],rulers:[{n:'Dimasa kings of Dimapur',f:1200,t:1536},{n:'Kachari rajas of Khaspur (collective, c.1700)',f:1650,t:1750},{n:'Govinda Chandra',f:1813,t:1830}]},
-{id:'jaintia',num:7,name:'Jaintia Kingdom',color:'#f97316',start:1500,end:1835,capital:'Jaintiapur',area:9000,districts:5,peak:11000,greatest:'Bar Gosain',wiki:'https://en.wikipedia.org/wiki/Jaintia_Kingdom',desc:'Pnar kingdom in the Jaintia Hills with its capital on the plains at Jaintiapur. Annexed by the British in 1835.',poly:[[25.6,91.9],[25.7,92.7],[25.0,92.6],[24.9,92.0]],rulers:[{n:'Parbat Ray',f:1500,t:1516},{n:'Bar Gosain',f:1548,t:1564},{n:'Jaintia rajas (collective, c.1700)',f:1650,t:1750},{n:'Rajendra Singha',f:1832,t:1835}],tributary:'British / neighbours in later years'},
-{id:'tripura',num:8,name:'Tripura (Manikya)',color:'#0ea5e9',start:1400,end:1949,capital:'Udaipur, then Agartala',area:10400,districts:6,peak:12000,greatest:'Dhanya Manikya',wiki:'https://en.wikipedia.org/wiki/Tripura_(princely_state)',desc:'Manikya dynasty of Tripura — one of India’s longest-lived princely lines, ruling into 1949.',poly:[[24.4,91.0],[24.5,92.3],[23.2,92.1],[22.9,91.1]],rulers:[{n:'Dhanya Manikya',f:1490,t:1515},{n:'Bir Chandra Manikya',f:1862,t:1896},{n:'Ratna Manikya II (approx.)',f:1685,t:1712},{n:'Bir Bikram',f:1923,t:1947}]},
-{id:'manipur',num:9,name:'Manipur (Meitei)',color:'#a855f7',start:33,end:1949,capital:'Kangla, Imphal',area:22300,districts:9,peak:24000,greatest:'Pamheiba (Garib Niwaz)',wiki:'https://en.wikipedia.org/wiki/Manipur_(princely_state)',desc:'Ancient kingdom at Kangla. Under Pamheiba it became a regional power. Fought the Anglo-Manipur War in 1891.',poly:[[25.3,93.7],[25.4,94.7],[24.0,94.6],[23.8,93.8]],rulers:[{n:'Pakhangba (trad.)',f:33,t:154},{n:'Pamheiba / Garib Niwaz',f:1709,t:1748},{n:'Charairongba',f:1697,t:1709},{n:'Churachand Singh',f:1891,t:1941}]},
-{id:'bhuyan',num:10,name:'Baro-Bhuyan Chiefdoms',color:'#84cc16',start:1350,end:1615,capital:'Various (Brahmaputra valley)',area:11000,districts:6,peak:13000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Baro-Bhuyan',desc:'Twelve landlord-chiefs who held the valley between larger kingdoms in the 14th–16th centuries.',poly:[[26.7,90.9],[27.0,92.6],[26.3,92.7],[26.0,91.0]],rulers:[{n:'Baro-Bhuyan chiefs (collective)',f:1350,t:1615}]},
-{id:'khasi',num:11,name:'Khasi States (e.g. Khyrim)',color:'#14b8a6',start:1200,end:1949,capital:'Shillong / Nongkrem area',area:7000,districts:4,peak:8000,greatest:'U Tirot Singh (Syiem of Nongkhlaw)',wiki:'https://en.wikipedia.org/wiki/Khasi_people',desc:'Confederacy of Khasi syiemships. U Tirot Singh led the Khasi rising of 1829–1833 against the British.',poly:[[25.8,91.0],[25.8,92.0],[25.1,92.0],[25.0,91.1]],rulers:[{n:'Syiems of Khyrim & Nongkhlaw',f:1200,t:1949},{n:'U Tirot Singh',f:1829,t:1833}]},
-{id:'naga',num:12,name:'Naga Tribal Polities',color:'#78716c',start:300,end:1947,capital:'Village polities (Kohima region)',area:16500,districts:8,peak:16500,greatest:'— (many chiefs)',wiki:'https://en.wikipedia.org/wiki/Naga_people',desc:'Many independent village polities — Angami, Ao, Sema and others — with no single king. Shown as one cultural area for clarity.',poly:[[27.1,93.9],[27.2,95.0],[25.6,95.1],[25.4,94.0]],rulers:[{n:'Village chiefs / khel leaders',f:300,t:1947}]},
-{id:'mizo',num:13,name:'Mizo / Lusei Chiefdoms',color:'#d946ef',start:1600,end:1890,capital:'Aizawl region villages',area:21000,districts:7,peak:21000,greatest:'Lusei chiefs',wiki:'https://en.wikipedia.org/wiki/Mizo_people',desc:'Lusei and related chiefdoms in the Lushai Hills. Came under British administration in the 1890s.',poly:[[24.1,92.4],[24.2,93.3],[22.7,93.1],[22.6,92.5]],rulers:[{n:'Lusei chiefs (collective)',f:1600,t:1890}]},
-{id:'sikkim',num:14,name:'Sikkim — Namgyal',color:'#eab308',start:1642,end:1975,capital:'Gangtok (earlier Yuksom / Rabdentse)',area:7096,districts:4,peak:7096,greatest:'Phuntsog Namgyal',wiki:'https://en.wikipedia.org/wiki/Kingdom_of_Sikkim',desc:'Founded in 1642 by Phuntsog Namgyal at Yuksom. Remained a kingdom / protectorate until merging with India in 1975.',poly:[[28.3,87.9],[28.4,88.9],[27.1,88.9],[27.0,88.0]],rulers:[{n:'Phuntsog Namgyal',f:1642,t:1670},{n:'Tashi Namgyal',f:1914,t:1963},{n:'Chakdor Namgyal',f:1700,t:1717},{n:'Palden Thondup Namgyal',f:1963,t:1975}]},
-{id:'bhutan',num:15,name:'Bhutan',color:'#f43f5e',start:1616,end:2025,capital:'Thimphu',area:18000,districts:5,peak:20000,greatest:'Ngawang Namgyal',wiki:'https://en.wikipedia.org/wiki/Bhutan',desc:'Unified from 1616 by Ngawang Namgyal. Held the Duars until the Duar War of 1864–65.',poly:[[28.4,89.4],[28.5,91.2],[27.0,91.0],[26.8,89.5]],rulers:[{n:'Ngawang Namgyal',f:1616,t:1651},{n:'Druk Desi & Je Khenpo (collective, c.1700)',f:1651,t:1720},{n:'Jigme Singye Wangchuck',f:1972,t:2006}]},
+{id:'kamarupa',num:1,name:'Kamarupa',color:'#d99a26',start:350,end:1140,capital:'Pragjyotishpura (Guwahati)',area:42000,districts:18,peak:52000,greatest:'Bhaskaravarman',wiki:'https://en.wikipedia.org/wiki/Kamarupa',desc:'First great kingdom of the Brahmaputra valley. Its kings ruled from Pragjyotishpura and claimed descent from Naraka.',poly:[[27.1,88.9],[27.6,91.5],[27.2,93.2],[26.2,93.4],[25.7,91.2],[25.9,89.2]],rulers:[{n:'Pushyavarman',f:350,t:374},{n:'Kumar Bhaskaravarman / Bhaskaravarman',f:594,t:650},{n:'Brahmapala',f:900,t:920}]},
+{id:'davaka',num:2,name:'Davaka',color:'#2e8b9a',start:350,end:550,capital:'— (central Assam)',area:6000,districts:3,peak:7000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Davaka',desc:'Small early kingdom in central Assam, later absorbed into Kamarupa.',poly:[[26.5,92.4],[26.6,93.3],[25.9,93.2],[25.8,92.5]],rulers:[{n:'Local Davaka chiefs',f:350,t:550}]},
+{id:'chutia',num:3,name:'Chutia Kingdom',color:'#c2507e',start:1187,end:1524,capital:'Sadiya',area:15000,districts:7,peak:18000,greatest:'Gaurinarayan',wiki:'https://en.wikipedia.org/wiki/Chutia_Kingdom',desc:'Ruled the far east around Sadiya. Known for copper-plate grants and the worship of Kesai Khati.',poly:[[28.1,94.6],[28.3,96.0],[27.4,95.9],[27.1,94.7]],rulers:[{n:'Birpal',f:1187,t:1220},{n:'Gaurinarayan',f:1220,t:1250},{n:'Nitipal',f:1500,t:1524}]},
+{id:'ahom',num:4,name:'Ahom Kingdom',color:'#c22e3e',start:1228,end:1826,capital:'Garhgaon, then Rangpur',area:48000,districts:22,peak:62000,greatest:'Sukaphaa / Rudra Singha',wiki:'https://en.wikipedia.org/wiki/Ahom_kingdom',desc:'Founded by Sukaphaa in 1228. Ruled Assam for nearly 600 years and stopped the Mughals at Saraighat in 1671.',poly:[[27.8,93.6],[28.0,95.9],[26.9,96.0],[26.1,94.2],[26.4,93.4]],rulers:[{n:'Sukaphaa',f:1228,t:1268},{n:'Suhungmung',f:1497,t:1539},{n:'Rudra Singha',f:1696,t:1714},{n:'Gadadhar Singha',f:1681,t:1696},{n:'Purandar Singha',f:1818,t:1819}]},
+{id:'koch',num:5,name:'Koch Kingdom',color:'#6d5ba8',start:1515,end:1949,capital:'Cooch Behar',area:22000,districts:11,peak:34000,greatest:'Nara Narayan',wiki:'https://en.wikipedia.org/wiki/Koch_dynasty',desc:'Rose under Viswa Singha and Nara Narayan. At its peak it invaded Assam (1562–63) and held the western valley.',poly:[[26.9,88.6],[27.0,90.3],[26.0,90.4],[25.6,88.9]],rulers:[{n:'Viswa Singha',f:1515,t:1540},{n:'Nara Narayan',f:1540,t:1587},{n:'Lakshmi Narayan',f:1587,t:1627},{n:'Rup Narayan (Koch Bihar)',f:1693,t:1714}]},
+{id:'kachari',num:6,name:'Kachari / Dimasa',color:'#2f8f5b',start:1200,end:1832,capital:'Dimapur, then Khaspur',area:16000,districts:8,peak:20000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Dimasa_Kingdom',desc:'Dimasa-Kachari kingdom centred first at Dimapur, later Maibong and Khaspur. The Ahoms sacked Dimapur in 1536.',poly:[[26.1,92.7],[26.3,93.9],[25.1,93.7],[24.8,92.8]],rulers:[{n:'Dimasa kings of Dimapur',f:1200,t:1536},{n:'Kachari rajas of Khaspur (collective, c.1700)',f:1650,t:1750},{n:'Govinda Chandra',f:1813,t:1830}]},
+{id:'jaintia',num:7,name:'Jaintia Kingdom',color:'#d96c1e',start:1500,end:1835,capital:'Jaintiapur',area:9000,districts:5,peak:11000,greatest:'Bar Gosain',wiki:'https://en.wikipedia.org/wiki/Jaintia_Kingdom',desc:'Pnar kingdom in the Jaintia Hills with its capital on the plains at Jaintiapur. Annexed by the British in 1835.',poly:[[25.6,91.9],[25.7,92.7],[25.0,92.6],[24.9,92.0]],rulers:[{n:'Parbat Ray',f:1500,t:1516},{n:'Bar Gosain',f:1548,t:1564},{n:'Jaintia rajas (collective, c.1700)',f:1650,t:1750},{n:'Rajendra Singha',f:1832,t:1835}],tributary:'British / neighbours in later years'},
+{id:'tripura',num:8,name:'Tripura (Manikya)',color:'#2277b3',start:1400,end:1949,capital:'Udaipur, then Agartala',area:10400,districts:6,peak:12000,greatest:'Dhanya Manikya',wiki:'https://en.wikipedia.org/wiki/Tripura_(princely_state)',desc:'Manikya dynasty of Tripura — one of India’s longest-lived princely lines, ruling into 1949.',poly:[[24.4,91.0],[24.5,92.3],[23.2,92.1],[22.9,91.1]],rulers:[{n:'Dhanya Manikya',f:1490,t:1515},{n:'Bir Chandra Manikya',f:1862,t:1896},{n:'Ratna Manikya II (approx.)',f:1685,t:1712},{n:'Bir Bikram',f:1923,t:1947}]},
+{id:'manipur',num:9,name:'Manipur (Meitei)',color:'#8e44ad',start:33,end:1949,capital:'Kangla, Imphal',area:22300,districts:9,peak:24000,greatest:'Pamheiba (Garib Niwaz)',wiki:'https://en.wikipedia.org/wiki/Manipur_(princely_state)',desc:'Ancient kingdom at Kangla. Under Pamheiba it became a regional power. Fought the Anglo-Manipur War in 1891.',poly:[[25.3,93.7],[25.4,94.7],[24.0,94.6],[23.8,93.8]],rulers:[{n:'Pakhangba (trad.)',f:33,t:154},{n:'Pamheiba / Garib Niwaz',f:1709,t:1748},{n:'Charairongba',f:1697,t:1709},{n:'Churachand Singh',f:1891,t:1941}]},
+{id:'bhuyan',num:10,name:'Baro-Bhuyan Chiefdoms',color:'#7a9a2e',start:1350,end:1615,capital:'Various (Brahmaputra valley)',area:11000,districts:6,peak:13000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Baro-Bhuyan',desc:'Twelve landlord-chiefs who held the valley between larger kingdoms in the 14th–16th centuries.',poly:[[26.7,90.9],[27.0,92.6],[26.3,92.7],[26.0,91.0]],rulers:[{n:'Baro-Bhuyan chiefs (collective)',f:1350,t:1615}]},
+{id:'khasi',num:11,name:'Khasi States (e.g. Khyrim)',color:'#1f9e8f',start:1200,end:1949,capital:'Shillong / Nongkrem area',area:7000,districts:4,peak:8000,greatest:'U Tirot Singh (Syiem of Nongkhlaw)',wiki:'https://en.wikipedia.org/wiki/Khasi_people',desc:'Confederacy of Khasi syiemships. U Tirot Singh led the Khasi rising of 1829–1833 against the British.',poly:[[25.8,91.0],[25.8,92.0],[25.1,92.0],[25.0,91.1]],rulers:[{n:'Syiems of Khyrim & Nongkhlaw',f:1200,t:1949},{n:'U Tirot Singh',f:1829,t:1833}]},
+{id:'naga',num:12,name:'Naga Tribal Polities',color:'#7d7468',start:300,end:1947,capital:'Village polities (Kohima region)',area:16500,districts:8,peak:16500,greatest:'— (many chiefs)',wiki:'https://en.wikipedia.org/wiki/Naga_people',desc:'Many independent village polities — Angami, Ao, Sema and others — with no single king. Shown as one cultural area for clarity.',poly:[[27.1,93.9],[27.2,95.0],[25.6,95.1],[25.4,94.0]],rulers:[{n:'Village chiefs / khel leaders',f:300,t:1947}]},
+{id:'mizo',num:13,name:'Mizo / Lusei Chiefdoms',color:'#b04a9e',start:1600,end:1890,capital:'Aizawl region villages',area:21000,districts:7,peak:21000,greatest:'Lusei chiefs',wiki:'https://en.wikipedia.org/wiki/Mizo_people',desc:'Lusei and related chiefdoms in the Lushai Hills. Came under British administration in the 1890s.',poly:[[24.1,92.4],[24.2,93.3],[22.7,93.1],[22.6,92.5]],rulers:[{n:'Lusei chiefs (collective)',f:1600,t:1890}]},
+{id:'sikkim',num:14,name:'Sikkim — Namgyal',color:'#c2a413',start:1642,end:1975,capital:'Gangtok (earlier Yuksom / Rabdentse)',area:7096,districts:4,peak:7096,greatest:'Phuntsog Namgyal',wiki:'https://en.wikipedia.org/wiki/Kingdom_of_Sikkim',desc:'Founded in 1642 by Phuntsog Namgyal at Yuksom. Remained a kingdom / protectorate until merging with India in 1975.',poly:[[28.3,87.9],[28.4,88.9],[27.1,88.9],[27.0,88.0]],rulers:[{n:'Phuntsog Namgyal',f:1642,t:1670},{n:'Tashi Namgyal',f:1914,t:1963},{n:'Chakdor Namgyal',f:1700,t:1717},{n:'Palden Thondup Namgyal',f:1963,t:1975}]},
+{id:'bhutan',num:15,name:'Bhutan',color:'#d64550',start:1616,end:2025,capital:'Thimphu',area:18000,districts:5,peak:20000,greatest:'Ngawang Namgyal',wiki:'https://en.wikipedia.org/wiki/Bhutan',desc:'Unified from 1616 by Ngawang Namgyal. Held the Duars until the Duar War of 1864–65.',poly:[[28.4,89.4],[28.5,91.2],[27.0,91.0],[26.8,89.5]],rulers:[{n:'Ngawang Namgyal',f:1616,t:1651},{n:'Druk Desi & Je Khenpo (collective, c.1700)',f:1651,t:1720},{n:'Jigme Singye Wangchuck',f:1972,t:2006}]},
 {id:'mughal',num:16,name:'Mughal Incursions',color:'#64748b',start:1613,end:1682,capital:'Hajo (frontier)',area:8000,districts:4,peak:14000,greatest:'Mir Jumla / Ram Singh I (commanders)',wiki:'https://en.wikipedia.org/wiki/Ahom%E2%80%93Mughal_conflicts',desc:'Mughal pushes into Assam 1613–1682, reaching Hajo and Guwahati at times. Ended after Saraighat (1671) and Itakhuli (1682).',poly:[[26.5,90.8],[26.6,91.9],[25.9,91.8],[25.8,90.9]],rulers:[{n:'Mughal faujdars at Hajo',f:1613,t:1682}],tributary:'Frontier occupation — not full annexation'},
-{id:'british',num:17,name:'British India',color:'#334155',start:1826,end:1947,capital:'Calcutta / Shillong (Assam)',area:210000,districts:45,peak:210000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/British_Raj',desc:'After the Treaty of Yandabo (1826) Britain took Assam, then expanded across the hills over the 19th century.',poly:[[28.5,87.9],[28.6,97.2],[22.6,97.0],[22.5,88.0]],rulers:[{n:'British Commissioners / Governors',f:1826,t:1947}]},
-{id:'india',num:18,name:'Independent India',color:'#16a34a',start:1947,end:2025,capital:'New Delhi • State capitals in NE',area:262000,districts:120,peak:262000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Northeast_India',desc:'From 1947 the Northeast is part of India. New states: Nagaland 1963, Meghalaya / Manipur / Tripura statehood 1972, Sikkim 1975, Arunachal & Mizoram 1987.',poly:[[28.5,87.9],[28.6,97.2],[22.6,97.0],[22.5,88.0]],rulers:[{n:'Elected governments',f:1947,t:2025}]},
+{id:'british',num:17,name:'British India',color:'#3f4c5c',start:1826,end:1947,capital:'Calcutta / Shillong (Assam)',area:210000,districts:45,peak:210000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/British_Raj',desc:'After the Treaty of Yandabo (1826) Britain took Assam, then expanded across the hills over the 19th century.',poly:[[28.5,87.9],[28.6,97.2],[22.6,97.0],[22.5,88.0]],rulers:[{n:'British Commissioners / Governors',f:1826,t:1947}]},
+{id:'india',num:18,name:'Independent India',color:'#2e7d46',start:1947,end:2025,capital:'New Delhi • State capitals in NE',area:262000,districts:120,peak:262000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Northeast_India',desc:'From 1947 the Northeast is part of India. New states: Nagaland 1963, Meghalaya / Manipur / Tripura statehood 1972, Sikkim 1975, Arunachal & Mizoram 1987.',poly:[[28.5,87.9],[28.6,97.2],[22.6,97.0],[22.5,88.0]],rulers:[{n:'Elected governments',f:1947,t:2025}]},
 ];
 const BATTLES=[
 {y:1536,n:'Ahom sack of Dimapur',era:'Medieval',type:'War',loc:'Dimapur',desc:'Ahoms under Suhungmung sack Dimapur, pushing the Kachari capital inland.'},
@@ -282,17 +352,16 @@ const DISTRICT_TEASERS=[
 {n:'Cooch Behar',s:'Assam / Bengal border',t:'Seat of the Koch kings.'},
 {n:'Aizawl',s:'Mizoram',t:'Heart of the Lusei hills.'},
 ];
-let currentYear=1700, selectedId='ahom', overlordMode=false, layers=[], playing=false, playTimer=null;
+let currentYear=1700, selectedId='ahom', overlordMode=false, layers=[], playing=false, playRAF=null, playLast=0;
 let map=null, leafletOK=false;
 try{
   if(typeof L!=='undefined'){
-    map=L.map('map',{scrollWheelZoom:true}).setView([26.4,92.8],6);
+    map=L.map('map',{scrollWheelZoom:true,zoomAnimation:false,fadeAnimation:false,markerZoomAnimation:false}).setView([26.4,92.8],6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
     leafletOK=true;
   }
 }catch(e){leafletOK=false}
 if(!leafletOK){
-  // Fallback stub so all controls still work without Leaflet CDN
   map={zoomIn:function(){},zoomOut:function(){},setView:function(){},flyTo:function(){},on:function(){}};
   document.getElementById('map').innerHTML='<div style="padding:10px;font-size:12px;font-weight:700">Map — Northeast India (schematic, borders approximate)</div><svg id="fallbackSvg" class="fallback-map" viewBox="0 0 800 520" preserveAspectRatio="xMidYMid meet" style="height:500px"></svg>';
 }
@@ -302,7 +371,7 @@ function drawFallback(){
   if(leafletOK) return;
   const svg=document.getElementById('fallbackSvg'); if(!svg) return;
   const W=800,H=520; let act=activePolities(currentYear).sort((a,b)=>b.area-a.area);
-  let bg=`<rect x="0" y="0" width="${W}" height="${H}" fill="#cfe8f5"></rect><polygon points="60,40 740,30 760,420 80,470" fill="#e8e0c8" stroke="#999" stroke-width="2"/>`;
+  let bg=`<rect x="0" y="0" width="${W}" height="${H}" fill="#cfe0e5"></rect><polygon points="60,40 740,30 760,420 80,470" fill="#e9e2cd" stroke="#999" stroke-width="2"/>`;
   let polys=act.map(p=>{
     let pts=p.poly.map(pt=>project(pt[0],pt[1],W,H).join(',')).join(' ');
     let dash=p.tributary?'stroke-dasharray="8 6"':'';
@@ -317,7 +386,8 @@ function drawFallback(){
 function activePolities(y){return POLITIES.filter(p=>y>=p.start&&y<=p.end)}
 function rulerFor(p,y){let r=p.rulers.find(x=>y>=x.f&&y<=x.t);return r?r.n:'Ruler c. '+y+' — name uncertain / collective (approx.)'}
 function battlesNear(y){return BATTLES.filter(b=>Math.abs(b.y-y)<=35)}
-function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2600)}
+let toastTimer=null;
+function toast(msg){let t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2600)}
 function renderMap(){
   if(!leafletOK){drawFallback();return}
   try{
@@ -326,13 +396,18 @@ function renderMap(){
   let sorted=[...act].sort((a,b)=>b.area-a.area);
   sorted.forEach(p=>{
     let isIndiaOrBritish=(p.id==='british'||p.id==='india');
-    let opts={color:isIndiaOrBritish?'#334155':p.color,weight:p.tributary?2:1.5,dashArray:p.tributary?'6 6':null,fillColor:(overlordMode&&p.tributary)?'#7b1e2b':p.color,fillOpacity:isIndiaOrBritish?0.18:0.62};
+    let opts={color:isIndiaOrBritish?'#3f4c5c':p.color,weight:p.tributary?2:1.5,dashArray:p.tributary?'6 6':null,fillColor:(overlordMode&&p.tributary)?'#7b1e2b':p.color,fillOpacity:isIndiaOrBritish?0.18:0.62};
     let poly=L.polygon(p.poly,opts).addTo(map);
     poly.bindTooltip(`<b>${p.name}</b><br>${p.start}–${p.end>2025?'present':p.end}<br>Capital: ${p.capital}`,{sticky:true});
     poly.on('click',()=>{selectedId=p.id;renderSelected();renderCollector()});
     layers.push(poly);
   });
   }catch(e){leafletOK=false;drawFallback()}
+}
+function markNearBattles(){
+  document.querySelectorAll('#density i').forEach(el=>{
+    let y=parseInt(el.getAttribute('data-y')); el.classList.toggle('near',Math.abs(y-currentYear)<=20);
+  });
 }
 function renderWho(){
   document.getElementById('whoTitle').textContent=`Who Ruled in ${currentYear}`;
@@ -343,7 +418,7 @@ function renderWho(){
   document.getElementById('battleCount').textContent=`${battles.length} battle${battles.length!==1?'s':''} recorded near this year`;
   let html='';
   if(!act.length) html='<p>No single ruling house recorded — tribal / village polities.</p>';
-  act.slice(0,10).forEach(p=>{
+  act.slice(0,10).forEach((p,i)=>{
     let share=Math.max(2,Math.round(p.area/total*100));
     let direct=p.tributary?Math.round(p.area*0.6):p.area;
     let trib=p.tributary?p.area-direct:0;
@@ -353,17 +428,18 @@ function renderWho(){
   let largest=act[0];
   if(largest) document.getElementById('oneLine').textContent=`In ${currentYear} the ${largest.name} was the largest power in the Northeast, ruling from ${largest.capital}, under ${rulerFor(largest,currentYear)}.`;
 }
-function selectPolity(id){selectedId=id;renderSelected();renderCollector();let p=POLITIES.find(x=>x.id===id);if(p&&leafletOK&&typeof L!=='undefined'){try{let c=L.polygon(p.poly).getBounds().getCenter();map.flyTo(c,6)}catch(e){}}}
+function selectPolity(id){selectedId=id;renderSelected();renderCollector();let p=POLITIES.find(x=>x.id===id);if(p&&leafletOK&&typeof L!=='undefined'){try{let c=L.polygon(p.poly).getBounds().getCenter();map.setView(c,6)}catch(e){}}}
 function renderSelected(){
   let p=POLITIES.find(x=>x.id===selectedId) || activePolities(currentYear)[0];
-  if(!p){document.getElementById('selectedContent').innerHTML='<p>Click a coloured area on the map.</p>';return}
+  let box=document.getElementById('selectedContent');
+  if(!p){box.innerHTML='<p>Click a coloured area on the map.</p>';return}
   let rel=BATTLES.filter(b=>b.desc.toLowerCase().includes(p.name.split(' ')[0].toLowerCase())||p.name.toLowerCase().includes('ahom')&&b.n.toLowerCase().includes('ahom')||b.loc.toLowerCase().includes(p.capital.split(',')[0].toLowerCase())).slice(0,3);
-  document.getElementById('selectedContent').innerHTML=`
-    <div style="display:flex;gap:8px;align-items:center"><span class="swatch" style="background:${p.color};width:22px;height:22px"></span><h2 style="margin:0">${p.name}</h2></div>
+  box.innerHTML=`
+    <div style="display:flex;gap:9px;align-items:center"><span class="swatch" style="background:${p.color};width:22px;height:22px;border-radius:6px"></span><h2 style="margin:0">${p.name}</h2></div>
     <p style="line-height:1.7;font-size:14px">${p.desc}</p>
-    <p style="font-size:13px;line-height:1.8"><b>Dates:</b> c. ${p.start} – ${p.end}<br><b>Capital:</b> ${p.capital}<br><b>Area:</b> ~${p.area.toLocaleString()} km² • ${p.districts} districts (approx.)<br><b>Now ruled by (in ${currentYear}):</b> ${activePolities(currentYear).includes(p)?rulerFor(p,currentYear):'— not ruling in this year'}</p>
-    <p style="font-size:13px"><b>Rulers:</b> ${p.rulers.map(r=>`${r.n} (${r.f}–${r.t})`).join(' • ')}</p>
-    ${rel.length?`<p style="font-size:13px"><b>Related battles:</b> ${rel.map(b=>`${b.n} (${b.y})`).join(', ')}</p>`:''}
+    <p style="font-size:13px;line-height:1.85"><b>Dates:</b> c. ${p.start} – ${p.end}<br><b>Capital:</b> ${p.capital}<br><b>Area:</b> ~${p.area.toLocaleString()} km² • ${p.districts} districts (approx.)<br><b>Now ruled by (in ${currentYear}):</b> ${activePolities(currentYear).includes(p)?rulerFor(p,currentYear):'— not ruling in this year'}</p>
+    <p style="font-size:13px;line-height:1.7"><b>Rulers:</b> ${p.rulers.map(r=>`${r.n} (${r.f}–${r.t})`).join(' • ')}</p>
+    ${rel.length?`<p style="font-size:13px;line-height:1.7"><b>Related battles:</b> ${rel.map(b=>`${b.n} (${b.y})`).join(', ')}</p>`:''}
     <a href="${p.wiki}" target="_blank" rel="noopener">Read on Wikipedia →</a>
   `;
 }
@@ -374,18 +450,19 @@ function renderCollector(){
   let show=p||largest; if(!show) return;
   let years=show.end-show.start;
   let bcount=BATTLES.filter(b=>b.y>=show.start&&b.y<=show.end).length;
-  document.getElementById('collectorCard').innerHTML=`
+  let card=document.getElementById('collectorCard');
+  card.innerHTML=`
     <span class="collector-num">CARD #${String(show.num).padStart(3,'0')}</span>
     <h3>Collector Card — ${show===largest?'Largest power in '+currentYear:'Selected kingdom'}</h3>
-    <h3 style="font-family:Fraunces,serif">${show.name}</h3>
-    <p style="margin:0;font-size:13px;color:var(--muted)">${show.capital} • ${show.start}–${show.end}</p>
+    <div class="cname">${show.name}</div>
+    <p class="cmeta">${show.capital} • ${show.start}–${show.end}</p>
     <div class="stats">
       <div class="stat"><b>${years} yrs</b><span>Years ruled</span></div>
       <div class="stat"><b>${show.peak.toLocaleString()} km²</b><span>Peak area</span></div>
       <div class="stat"><b>${bcount}</b><span>Battles in its era</span></div>
       <div class="stat"><b>${show.rulers.length}+</b><span>Known rulers listed</span></div>
     </div>
-    <p style="font-size:13px;margin-top:12px;line-height:1.6"><b>Greatest ruler:</b> ${show.greatest}<br><b>Source:</b> Schwartzberg Atlas, Gait, Baruah & Wikipedia entry for ${show.name}.</p>
+    <p style="font-size:13px;margin-top:14px;line-height:1.65;color:var(--on-dark-dim)"><b style="color:var(--on-dark)">Greatest ruler:</b> ${show.greatest}<br><b style="color:var(--on-dark)">Source:</b> Schwartzberg Atlas, Gait, Baruah &amp; Wikipedia entry for ${show.name}.</p>
     <button class="btn btn-orange" style="width:100%" onclick="selectPolity('${show.id}')">Show on map</button>
   `;
 }
@@ -395,24 +472,39 @@ function renderBegin(shuffle){
 }
 function renderOnThisDay(){
   let today=new Date(); let items=BATTLES.slice(today.getDate()%BATTLES.length).slice(0,2);
-  // Use selected year anniversaries
   let ann=BATTLES.filter(b=>currentYear-b.y>0 && (currentYear-b.y)%50===0);
   let show=ann.length?ann:items;
-  document.getElementById('onThisDay').innerHTML=show.map(b=>`<p style="font-size:13px;line-height:1.6"><b>${b.n}</b> — ${b.y}<br><span style="color:var(--muted)">${b.desc}</span></p>`).join('')+`<p style="font-size:12px;color:var(--muted)">Anniversaries are shown for round years from ${currentYear} where available; otherwise highlights from the full list.</p>`;
+  document.getElementById('onThisDay').innerHTML=show.map(b=>`<p style="font-size:13px;line-height:1.65"><b>${b.n}</b> — ${b.y}<br><span style="color:var(--muted)">${b.desc}</span></p>`).join('')+`<p style="font-size:12px;color:var(--muted)">Anniversaries are shown for round years from ${currentYear} where available; otherwise highlights from the full list.</p>`;
 }
 function renderDensity(){
-  let el=document.getElementById('density'); el.innerHTML=BATTLES.map(b=>{let pct=((b.y-300)/(2025-300)*100);return `<i style="left:${pct}%" title="${b.y} ${b.n}"></i>`}).join('');
+  let el=document.getElementById('density'); el.innerHTML=BATTLES.map(b=>{let pct=((b.y-300)/(2025-300)*100);return `<i data-y="${b.y}" style="left:${pct}%" title="${b.y} ${b.n}"></i>`}).join('');
+}
+function paintSlider(){
+  let s=document.getElementById('yearSlider');
+  let pct=((currentYear-300)/(2025-300)*100);
+  s.style.background=`linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}%, var(--dark-2) ${pct}%, var(--dark-2) 100%)`;
+}
+function setYearText(y){
+  let v=String(Math.round(y));
+  document.getElementById('bigYear').textContent=v;
+  document.getElementById('yearBoxNum').textContent=v;
 }
 function updateYear(y){
-  currentYear=parseInt(y);
+  currentYear=Math.max(300,Math.min(2025,parseInt(y)||300));
   document.getElementById('yearSlider').value=currentYear;
-  document.getElementById('bigYear').textContent=currentYear;
-  document.getElementById('yearBoxNum').textContent=currentYear;
   document.getElementById('yearInput').value=currentYear;
-  renderMap(); renderWho(); renderSelected(); renderCollector(); renderOnThisDay();
+  paintSlider();
+  setYearText(currentYear);
+  renderMap(); renderWho(); renderSelected(); renderCollector(); renderOnThisDay(); markNearBattles();
 }
-function jumpYear(y){closeModals();updateYear(y);window.scrollTo({top:0,behavior:'smooth'})}
-function randomYear(){let y=300+Math.floor(Math.random()*1725);updateYear(y);toast(`Time Machine jumped to ${y}`)}
+function goYear(y){updateYear(y)}
+function jumpYear(y){closeModals();updateYear(y);window.scrollTo(0,0)}
+function animateYearTo(target){
+  stopPlay();
+  updateYear(target);
+  toast(`Time Machine jumped to ${target}`);
+}
+function randomYear(){let y=300+Math.floor(Math.random()*1725);animateYearTo(y)}
 function resetMap(){if(map&&map.setView)map.setView([26.4,92.8],6)}
 function toggleFull(){let el=document.querySelector('.map-card');if(document.fullscreenElement)document.exitFullscreen();else el.requestFullscreen&&el.requestFullscreen()}
 function sharePage(){
@@ -420,23 +512,32 @@ function sharePage(){
   if(navigator.share){navigator.share({title:'Northeast Historical Atlas',text})}else{navigator.clipboard&&navigator.clipboard.writeText(text);toast('Copied — paste anywhere to share')}
 }
 function downloadPoster(){
-  let c=document.createElement('canvas');c.width=1080;c.height=1080;let x=c.getContext('2d');x.fillStyle='#0f2340';x.fillRect(0,0,1080,1080);x.fillStyle='#fff8e9';x.fillRect(40,40,1000,1000);x.fillStyle='#0f2340';x.font='bold 64px Georgia';x.fillText('Northeast Atlas',70,140);x.font='bold 120px Georgia';x.fillText(currentYear,70,280);x.font='28px sans-serif';let act=activePolities(currentYear).sort((a,b)=>b.area-a.area);act.slice(0,5).forEach((p,i)=>{x.fillStyle=p.color;x.fillRect(70,340+i*90,28,28);x.fillStyle='#111';x.fillText(p.name+' — '+rulerFor(p,currentYear),115,365+i*90)});x.font='20px sans-serif';x.fillStyle='#666';x.fillText('Borders are approximations • CC0 • Northeast Historical Atlas',70,980);let a=document.createElement('a');a.download=`northeast-atlas-${currentYear}.png`;a.href=c.toDataURL('image/png');a.click();toast('Poster downloaded')
+  let c=document.createElement('canvas');c.width=1080;c.height=1080;let x=c.getContext('2d');x.fillStyle='#0f2340';x.fillRect(0,0,1080,1080);x.fillStyle='#fffdf8';x.fillRect(40,40,1000,1000);x.fillStyle='#211d16';x.font='bold 64px Georgia';x.fillText('Northeast Atlas',70,140);x.font='bold 120px Georgia';x.fillText(currentYear,70,280);x.font='28px sans-serif';let act=activePolities(currentYear).sort((a,b)=>b.area-a.area);act.slice(0,5).forEach((p,i)=>{x.fillStyle=p.color;x.fillRect(70,340+i*90,28,28);x.fillStyle='#211d16';x.fillText(p.name+' — '+rulerFor(p,currentYear),115,365+i*90)});x.font='20px sans-serif';x.fillStyle='#666';x.fillText('Borders are approximations • CC0 • Northeast Historical Atlas',70,980);let a=document.createElement('a');a.download=`northeast-atlas-${currentYear}.png`;a.href=c.toDataURL('image/png');a.click();toast('Poster downloaded')
 }
 function openModal(id){closeModals();document.getElementById('modal-'+id).classList.add('open');if(id==='battles')renderBattlesModal();if(id==='explore')renderExplore()}
 function closeModals(){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('open'))}
-function renderExplore(){document.getElementById('exploreKingdoms').innerHTML=POLITIES.map(p=>`<button class="who-item" onclick="closeModals();selectPolity('${p.id}');updateYear(Math.min(Math.max(${currentYear},${p.start}),${p.end}))"><span class="swatch" style="background:${p.color}"></span><span><b>${p.name}</b><small>${p.start}–${p.end} • ${p.capital}</small></span></button>`).join('')}
+function renderExplore(){document.getElementById('exploreKingdoms').innerHTML=POLITIES.map(p=>`<button class="who-item" onclick="closeModals();selectPolity('${p.id}');updateYear(Math.min(Math.max(${currentYear},${p.start}),${p.end}),true)"><span class="swatch" style="background:${p.color}"></span><span><b>${p.name}</b><small>${p.start}–${p.end} • ${p.capital}</small></span></button>`).join('')}
 function renderBattlesModal(){
   let era=document.getElementById('battleEra').value, typ=document.getElementById('battleType').value, from=parseInt(document.getElementById('battleFrom').value)||0, to=parseInt(document.getElementById('battleTo').value)||9999;
   let list=BATTLES.filter(b=>(era==='all'||b.era===era)&&(typ==='all'||b.type===typ)&&b.y>=from&&b.y<=to);
-  document.getElementById('battlesList').innerHTML=list.map(b=>`<div class="battle-row"><span class="chip">${b.y} • ${b.type} • ${b.era}</span><h4 style="margin:8px 0 4px">${b.n}</h4><p style="margin:0;font-size:13px;line-height:1.6;color:#444">${b.loc} — ${b.desc}</p><button class="btn btn-outline" style="margin-top:8px;padding:8px 12px;min-height:36px" onclick="closeModals();updateYear(${b.y})">See ${b.y} on map →</button></div>`).join('')||'<p>No battles match those filters.</p>';
+  document.getElementById('battlesList').innerHTML=list.map(b=>`<div class="battle-row"><span class="chip">${b.y} • ${b.type} • ${b.era}</span><h4 style="margin:9px 0 4px">${b.n}</h4><p style="margin:0;font-size:13px;line-height:1.6;color:var(--muted)">${b.loc} — ${b.desc}</p><button class="btn btn-outline" style="margin-top:10px;padding:8px 12px;min-height:36px" onclick="closeModals();updateYear(${b.y},true)">See ${b.y} on map →</button></div>`).join('')||'<p>No battles match those filters.</p>';
 }
-// events
-document.getElementById('yearSlider').addEventListener('input',e=>updateYear(e.target.value));
-document.getElementById('yearBox').addEventListener('click',e=>{let inp=document.getElementById('yearInput');inp.style.display=inp.style.display==='none'?'block':'none';inp.focus()});
-document.getElementById('yearInput').addEventListener('change',e=>updateYear(e.target.value));
+function stopPlay(){
+  playing=false; document.getElementById('playBtn').textContent='▶'; document.getElementById('playBtn').classList.remove('playing');
+  if(playRAF) cancelAnimationFrame(playRAF); playRAF=null;
+}
+function playTick(ts){
+  if(!playing) return;
+  if(!playLast) playLast=ts;
+  if(ts-playLast>=85){ playLast=ts; let y=currentYear+1; if(y>2025) y=300; updateYear(y); }
+  playRAF=requestAnimationFrame(playTick);
+}
+document.getElementById('yearSlider').addEventListener('input',e=>{stopPlay();updateYear(e.target.value)});
+document.getElementById('yearBox').addEventListener('click',e=>{if(e.target.id==='yearInput')return;let inp=document.getElementById('yearInput');inp.style.display=inp.style.display==='none'?'block':'none';if(inp.style.display==='block')inp.focus()});
+document.getElementById('yearInput').addEventListener('change',e=>updateYear(e.target.value,true));
 document.getElementById('stateSel').addEventListener('change',e=>{
   let v=e.target.value; const centers={'Assam':[26.2,92.5,7],'Arunachal Pradesh':[28.2,94.5,7],'Manipur':[24.7,94.0,8],'Meghalaya':[25.3,91.3,8],'Mizoram':[23.2,92.8,8],'Nagaland':[26.2,94.5,8],'Sikkim':[27.5,88.4,8],'Tripura':[23.8,91.7,8]};
-  if(v==='all')resetMap();else if(centers[v]&&map.flyTo)map.flyTo([centers[v][0],centers[v][1]],centers[v][2]);
+  if(v==='all')resetMap();else if(centers[v]&&map.flyTo)map.setView([centers[v][0],centers[v][1]],centers[v][2]);
   toast(v==='all'?'Showing all Northeast':'Zoomed to '+v);
 });
 document.getElementById('searchBox').addEventListener('input',e=>{
@@ -444,11 +545,13 @@ document.getElementById('searchBox').addEventListener('input',e=>{
   let kings=POLITIES.filter(p=>p.name.toLowerCase().includes(q)||p.rulers.some(r=>r.n.toLowerCase().includes(q))||p.capital.toLowerCase().includes(q));
   let bats=BATTLES.filter(b=>b.n.toLowerCase().includes(q));
   let dist=DISTRICT_TEASERS.filter(d=>d.n.toLowerCase().includes(q));
-  box.innerHTML=(kings.map(p=>`<div>👑 <a href="#" onclick="selectPolity('${p.id}');return false">${p.name}</a> — ${p.capital}</div>`).join('')+bats.map(b=>`<div>⚔️ <a href="#" onclick="updateYear(${b.y});return false">${b.n} (${b.y})</a></div>`).join('')+dist.map(d=>`<div>📍 <b>${d.n}</b> — ${d.t}</div>`).join(''))||'No match — try “Ahom”, “Saraighat”, “Imphal”, “Sukaphaa”…';
+  box.innerHTML=(kings.map(p=>`<div>👑 <a href="#" onclick="selectPolity('${p.id}');return false">${p.name}</a> — ${p.capital}</div>`).join('')+bats.map(b=>`<div>⚔️ <a href="#" onclick="updateYear(${b.y},true);return false">${b.n} (${b.y})</a></div>`).join('')+dist.map(d=>`<div>📍 <b>${d.n}</b> — ${d.t}</div>`).join(''))||'No match — try “Ahom”, “Saraighat”, “Imphal”, “Sukaphaa”…';
 });
 document.getElementById('playBtn').addEventListener('click',()=>{
-  playing=!playing; document.getElementById('playBtn').textContent=playing?'⏸':'▶';
-  if(playing){playTimer=setInterval(()=>{let y=currentYear+5;if(y>2025)y=300;updateYear(y)},450)}else clearInterval(playTimer);
+  if(playing){stopPlay();return}
+  playing=true; playLast=0;
+  let btn=document.getElementById('playBtn'); btn.textContent='⏸'; btn.classList.add('playing');
+  playRAF=requestAnimationFrame(playTick);
 });
 document.querySelectorAll('#modes button[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{
   document.querySelectorAll('#modes button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
@@ -460,7 +563,7 @@ document.querySelectorAll('#modes button[data-mode]').forEach(btn=>btn.addEventL
   else note.textContent='Single Year is on. You are seeing one year at a time — the clearest way to read the map.';
 }));
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModals()}));
-// init
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModals()});
 renderDensity(); renderBegin(); updateYear(1700);
 </script>
 </body>
