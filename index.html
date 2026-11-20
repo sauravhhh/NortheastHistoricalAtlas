@@ -247,16 +247,6 @@ footer{max-width:1440px;margin:0 auto;padding:4px 18px 30px}
       <div class="density" id="density"></div>
       <div class="ticks"><span>300</span><span>600</span><span>900</span><span>1200</span><span>1500</span><span>1700</span><span>1900</span><span>2000</span><span>Today</span></div>
       <button class="time-machine" onclick="randomYear()">🎲 &nbsp;Time Machine — jump to a random year</button>
-      <div class="modes" id="modes">
-        <button class="active" data-mode="single">Single Year</button>
-        <button data-mode="span">Time Span</button>
-        <button data-mode="follow">Follow a Kingdom</button>
-        <button data-mode="overlords" id="overlordBtn">Overlords: Stripes</button>
-        <button data-mode="display">Display</button>
-        <button onclick="downloadPoster()">⬇ Image</button>
-        <button onclick="sharePage()">↗ Share</button>
-      </div>
-      <p id="modeNote">Single Year is on. You are seeing one year at a time — the clearest way to read the map.</p>
     </div>
 
     <div class="card oneline">
@@ -322,11 +312,11 @@ const POLITIES=[
 {id:'kachari',num:6,name:'Kachari / Dimasa',color:'#2f8f5b',start:1200,end:1832,capital:'Dimapur, then Khaspur',area:16000,districts:8,peak:20000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Dimasa_Kingdom',desc:'Dimasa-Kachari kingdom centred first at Dimapur, later Maibong and Khaspur. The Ahoms sacked Dimapur in 1536.',poly:[[26.05,92.75],[26.28,93.3],[26.32,93.85],[25.8,93.75],[25.15,93.65],[24.85,93.1],[24.82,92.85],[25.4,92.7],[25.85,92.65]],rulers:[{n:'Dimasa kings of Dimapur',f:1200,t:1536},{n:'Kachari rajas of Khaspur (collective, c.1700)',f:1650,t:1750},{n:'Govinda Chandra',f:1813,t:1830}]},
 {id:'jaintia',num:7,name:'Jaintia Kingdom',color:'#d96c1e',start:1500,end:1835,capital:'Jaintiapur',area:9000,districts:5,peak:11000,greatest:'Bar Gosain',wiki:'https://en.wikipedia.org/wiki/Jaintia_Kingdom',desc:'Pnar kingdom in the Jaintia Hills with its capital on the plains at Jaintiapur. Annexed by the British in 1835.',poly:[[25.55,91.95],[25.68,92.35],[25.72,92.65],[25.35,92.62],[25.02,92.55],[24.92,92.2],[24.95,91.98],[25.25,91.9]],rulers:[{n:'Parbat Ray',f:1500,t:1516},{n:'Bar Gosain',f:1548,t:1564},{n:'Jaintia rajas (collective, c.1700)',f:1650,t:1750},{n:'Rajendra Singha',f:1832,t:1835}],tributary:'British / neighbours in later years'},
 {id:'tripura',num:8,name:'Tripura (Manikya)',color:'#2277b3',start:1400,end:1949,capital:'Udaipur, then Agartala',area:10400,districts:6,peak:12000,greatest:'Dhanya Manikya',wiki:'https://en.wikipedia.org/wiki/Tripura_(princely_state)',desc:'Manikya dynasty of Tripura — one of India’s longest-lived princely lines, ruling into 1949.',poly:[[24.35,91.05],[24.48,91.6],[24.52,92.25],[23.9,92.15],[23.25,92.05],[22.95,91.55],[22.92,91.12],[23.6,91.0]],rulers:[{n:'Dhanya Manikya',f:1490,t:1515},{n:'Bir Chandra Manikya',f:1862,t:1896},{n:'Ratna Manikya II (approx.)',f:1685,t:1712},{n:'Bir Bikram',f:1923,t:1947}]},
-{id:'manipur',num:9,name:'Manipur (Meitei)',color:'#8e44ad',start:33,end:1949,capital:'Kangla, Imphal',area:22300,districts:9,peak:24000,greatest:'Pamheiba (Garib Niwaz)',wiki:'https://en.wikipedia.org/wiki/Manipur_(princely_state)',desc:'Ancient kingdom at Kangla. Under Pamheiba it became a regional power. Fought the Anglo-Manipur War in 1891.',poly:[[25.25,93.75],[25.38,94.3],[25.42,94.65],[24.8,94.62],[24.05,94.55],[23.85,94.1],[23.82,93.85],[24.5,93.7]],rulers:[{n:'Pakhangba (trad.)',f:33,t:154},{n:'Pamheiba / Garib Niwaz',f:1709,t:1748},{n:'Charairongba',f:1697,t:1709},{n:'Churachand Singh',f:1891,t:1941}]},
+{id:'manipur',num:9,name:'Manipur (Meitei)',color:'#8e44ad',start:33,end:1949,capital:'Kangla, Imphal',area:22300,districts:9,peak:24000,greatest:'Pamheiba (Garib Niwaz)',wiki:'https://en.wikipedia.org/wiki/Manipur_(princely_state)',desc:'Ancient kingdom at Kangla. Under Pamheiba it became a regional power. Fought the Anglo-Manipur War in 1891.',poly:[[25.55,93.6],[25.68,94.15],[25.45,94.72],[24.9,94.6],[24.35,94.78],[23.9,94.35],[23.83,93.7],[24.15,93.15],[24.85,93.05],[25.3,93.35]],rulers:[{n:'Pakhangba (trad.)',f:33,t:154},{n:'Pamheiba / Garib Niwaz',f:1709,t:1748},{n:'Charairongba',f:1697,t:1709},{n:'Churachand Singh',f:1891,t:1941}]},
 {id:'bhuyan',num:10,name:'Baro-Bhuyan Chiefdoms',color:'#7a9a2e',start:1350,end:1615,capital:'Various (Brahmaputra valley)',area:11000,districts:6,peak:13000,greatest:'—',wiki:'https://en.wikipedia.org/wiki/Baro-Bhuyan',desc:'Twelve landlord-chiefs who held the valley between larger kingdoms in the 14th–16th centuries.',poly:[[26.65,90.95],[26.95,91.7],[27.02,92.55],[26.6,92.68],[26.05,92.6],[25.98,91.6],[26.05,91.02],[26.35,90.88]],rulers:[{n:'Baro-Bhuyan chiefs (collective)',f:1350,t:1615}]},
 {id:'khasi',num:11,name:'Khasi States (e.g. Khyrim)',color:'#1f9e8f',start:1200,end:1949,capital:'Shillong / Nongkrem area',area:7000,districts:4,peak:8000,greatest:'U Tirot Singh (Syiem of Nongkhlaw)',wiki:'https://en.wikipedia.org/wiki/Khasi_people',desc:'Confederacy of Khasi syiemships. U Tirot Singh led the Khasi rising of 1829–1833 against the British.',poly:[[25.75,91.05],[25.82,91.55],[25.78,91.95],[25.45,92.0],[25.12,91.95],[25.02,91.5],[25.05,91.12],[25.4,91.0]],rulers:[{n:'Syiems of Khyrim & Nongkhlaw',f:1200,t:1949},{n:'U Tirot Singh',f:1829,t:1833}]},
 {id:'naga',num:12,name:'Naga Tribal Polities',color:'#7d7468',start:300,end:1947,capital:'Village polities (Kohima region)',area:16500,districts:8,peak:16500,greatest:'— (many chiefs)',wiki:'https://en.wikipedia.org/wiki/Naga_people',desc:'Many independent village polities — Angami, Ao, Sema and others — with no single king. Shown as one cultural area for clarity.',poly:[[27.05,93.95],[27.18,94.5],[27.22,94.95],[26.6,95.08],[25.65,95.05],[25.42,94.5],[25.38,94.05],[26.2,93.9]],rulers:[{n:'Village chiefs / khel leaders',f:300,t:1947}]},
-{id:'mizo',num:13,name:'Mizo / Lusei Chiefdoms',color:'#b04a9e',start:1600,end:1890,capital:'Aizawl region villages',area:21000,districts:7,peak:21000,greatest:'Lusei chiefs',wiki:'https://en.wikipedia.org/wiki/Mizo_people',desc:'Lusei and related chiefdoms in the Lushai Hills. Came under British administration in the 1890s.',poly:[[24.05,92.45],[24.18,92.9],[24.22,93.25],[23.6,93.12],[22.75,93.05],[22.62,92.6],[22.65,92.48],[23.4,92.4]],rulers:[{n:'Lusei chiefs (collective)',f:1600,t:1890}]},
+{id:'mizo',num:13,name:'Mizo / Lusei Chiefdoms',color:'#b04a9e',start:1600,end:1890,capital:'Aizawl region villages',area:21000,districts:7,peak:21000,greatest:'Lusei chiefs',wiki:'https://en.wikipedia.org/wiki/Mizo_people',desc:'Lusei and related chiefdoms in the Lushai Hills. Came under British administration in the 1890s.',poly:[[24.3,92.5],[24.42,92.95],[24.35,93.3],[23.7,93.42],[22.9,93.3],[22.05,93.05],[21.95,92.6],[22.6,92.42],[23.4,92.38]],rulers:[{n:'Lusei chiefs (collective)',f:1600,t:1890}]},
 {id:'sikkim',num:14,name:'Sikkim — Namgyal',color:'#c2a413',start:1642,end:1975,capital:'Gangtok (earlier Yuksom / Rabdentse)',area:7096,districts:4,peak:7096,greatest:'Phuntsog Namgyal',wiki:'https://en.wikipedia.org/wiki/Kingdom_of_Sikkim',desc:'Founded in 1642 by Phuntsog Namgyal at Yuksom. Remained a kingdom / protectorate until merging with India in 1975.',poly:[[28.25,87.95],[28.38,88.45],[28.42,88.85],[27.8,88.92],[27.12,88.85],[27.02,88.3],[27.05,88.02],[27.7,87.9]],rulers:[{n:'Phuntsog Namgyal',f:1642,t:1670},{n:'Tashi Namgyal',f:1914,t:1963},{n:'Chakdor Namgyal',f:1700,t:1717},{n:'Palden Thondup Namgyal',f:1963,t:1975}]},
 {id:'bhutan',num:15,name:'Bhutan',color:'#d64550',start:1616,end:2025,capital:'Thimphu',area:18000,districts:5,peak:20000,greatest:'Ngawang Namgyal',wiki:'https://en.wikipedia.org/wiki/Bhutan',desc:'Unified from 1616 by Ngawang Namgyal. Held the Duars until the Duar War of 1864–65.',poly:[[28.35,89.45],[28.48,90.3],[28.52,91.15],[27.7,91.05],[27.02,90.95],[26.85,90.2],[26.82,89.55],[27.6,89.4]],rulers:[{n:'Ngawang Namgyal',f:1616,t:1651},{n:'Druk Desi & Je Khenpo (collective, c.1700)',f:1651,t:1720},{n:'Jigme Singye Wangchuck',f:1972,t:2006}]},
 {id:'mughal',num:16,name:'Mughal Incursions',color:'#64748b',start:1613,end:1682,capital:'Hajo (frontier)',area:8000,districts:4,peak:14000,greatest:'Mir Jumla / Ram Singh I (commanders)',wiki:'https://en.wikipedia.org/wiki/Ahom%E2%80%93Mughal_conflicts',desc:'Mughal pushes into Assam 1613–1682, reaching Hajo and Guwahati at times. Ended after Saraighat (1671) and Itakhuli (1682).',poly:[[26.45,90.85],[26.58,91.4],[26.62,91.85],[26.2,91.82],[25.88,91.75],[25.82,91.2],[25.85,90.92],[26.15,90.8]],rulers:[{n:'Mughal faujdars at Hajo',f:1613,t:1682}],tributary:'Frontier occupation — not full annexation'},
@@ -417,16 +407,23 @@ function drawLeaflet(act){
 function initLeaflet(){
   let el=document.getElementById('leafletMap');
   if(!el||typeof L==='undefined') return;
+  /* The container MUST be visible before L.map() measures it. Creating the
+     map while it is display:none gives Leaflet a 0x0 size, fitBounds then
+     collapses to a whole-world view, the kingdom polygons shrink to specks
+     and every label piles into one spot. Show it first, then create. */
+  el.style.display='block';
   try{
     leafletMap=L.map('leafletMap',{zoomControl:false,zoomAnimation:false,fadeAnimation:false,markerZoomAnimation:false});
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(leafletMap);
     leafletLayer=L.layerGroup().addTo(leafletMap);
-    leafletMap.fitBounds(NE_BOUNDS,{animate:false});
+    leafletMap.fitBounds(NE_BOUNDS,{animate:false,padding:[6,6]});
     leafletActive=true;
-    el.style.display='block';
     let svg=document.getElementById('atlasSvg'); if(svg) svg.style.display='none';
-    setTimeout(()=>{try{leafletMap.invalidateSize()}catch(e){}},60);
-  }catch(e){ leafletActive=false; leafletMap=null; el.style.display='none'; }
+    /* Safety net: once layout settles, if the view somehow ended up at
+       world zoom, fit the Northeast again. A correct view (zoom > 2) is
+       left untouched, so this never fights the reader. */
+    setTimeout(()=>{ if(!leafletMap) return; try{ leafletMap.invalidateSize(); if(leafletMap.getZoom()<=2) leafletMap.fitBounds(NE_BOUNDS,{animate:false,padding:[6,6]}); }catch(e){} },200);
+  }catch(e){ leafletActive=false; leafletMap=null; el.style.display='none'; let svg=document.getElementById('atlasSvg'); if(svg) svg.style.display=''; }
 }
 document.addEventListener('fullscreenchange',()=>{if(leafletActive&&leafletMap)setTimeout(()=>{try{leafletMap.invalidateSize()}catch(e){}},80)});
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
